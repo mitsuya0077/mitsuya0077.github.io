@@ -25,25 +25,29 @@ Do not delete the legacy endpoint while distributed clients still reference it.
 
 ## Exporter VPM compatibility
 
-- Canonical listing: `https://vr-vlog.github.io/VR-Vlog-lilToon-Exporter/index.json`.
-- Legacy listing: `https://mitsuya0077.github.io/VR-Vlog-lilToon-Exporter/index.json`.
-- Legacy introduction page: `https://mitsuya0077.github.io/VR-Vlog-lilToon-Exporter/`.
+- Official introduction: `https://vrvlog.fun/exporter/`.
+- New registrations: `https://vrvlog.fun/exporter/index.json`.
+- Canonical publication: `https://vr-vlog.github.io/VR-Vlog-lilToon-Exporter/index.json`.
+- Existing personal registrations: `https://mitsuya0077.github.io/VR-Vlog-lilToon-Exporter/index.json`.
+- Legacy introduction: `https://mitsuya0077.github.io/VR-Vlog-lilToon-Exporter/`.
 
 The legacy listing is real JSON served with HTTP 200, not an HTML redirect.
-It retains repository ID `com.vrvlog.packages`, all package versions and ZIP
-checksums. Only the listing's root `url` differs from the canonical JSON.
-Existing VCC/ALCOM registrations can keep using their original URL.
+It retains repository ID `com.vrvlog.packages`, every published package version,
+dependency and ZIP checksum. Only the listing's root `url` differs from the
+other endpoints. Existing VCC/ALCOM registrations stay unchanged. Browser
+visits to the introduction page move to the official domain.
 
-After each approved canonical VPM publication, run this local command from
-an existing [Exporter checkout](https://github.com/VR-Vlog/VR-Vlog-lilToon-Exporter):
+The Exporter repository's approved `Build VPM Listing` publication validates
+and publishes the canonical JSON, then synchronizes the official site and this
+legacy JSON with `Tools/sync-vpm-mirrors.py`. It creates ordinary commits on
+`main` with an expected-head guard and waits for the existing branch-based
+Pages deployment. It changes only `VR-Vlog-lilToon-Exporter/index.json` here.
+No workflow or schedule is added to this repository. A dedicated credential
+is restricted to this repository and `mitsuya0077/vr-vlog-website`.
 
-```sh
-python3 Tools/sync-legacy-listing.py --site-root /path/to/mitsuya0077.github.io
-```
-
-Review the changed JSON, merge its PR, and wait for this repository's existing
-branch-based Pages deployment. Read back both public JSON endpoints and verify
-that they match except for the root `url`. Do not report legacy updates complete
-until the old endpoint is current. This adds no workflow, scheduled job, token,
-or automatic synchronization; maintaining the mirror is a publication step.
-Keep both legacy paths while clients still reference them.
+The publication completes only after all three public JSON endpoints return
+HTTP 200 and the current publication data, except their own root `url`.
+A failed or partially applied update is reported by the publication job;
+retry the approved publication without force-pushing or changing published
+ZIPs. Immutable history and checksums prevent an older snapshot from removing
+already published versions. Keep both legacy paths while clients use them.
